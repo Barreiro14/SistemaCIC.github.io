@@ -1,26 +1,129 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facturación | Gestor Escolar</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Facturación | Gestor Escolar</title>
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+  <div class="sidebar">
+    <a href="dashboard.html" data-role="all"><span class="material-symbols-sharp">home</span>Inicio</a>
+    <a href="calificaciones.html" data-role="all"><span class="material-symbols-sharp">grading</span>Calificaciones</a>
+    <a href="facturacion.html" class="active" data-role="director administrador"><span class="material-symbols-sharp">attach_money</span>Facturación</a>
+    <a href="registro.html" data-role="director administrador"><span class="material-symbols-sharp">folder_open</span>Registro</a>
+    <a data-role="all"><span class="material-symbols-sharp">account_circle</span>Account</a>
+  </div>
 
-<div class="sidebar">
-    <h2>Gestor Escolar</h2>
-    <ul>
-        <li><a href="dashboard.html">Inicio</a></li>
-        <li><a href="registro.html">Registro</a></li>
-        <li><a href="calificaciones.html">Calificaciones</a></li>
-        <li><a href="facturacion.html">Facturación</a></li>
-        <li><a href="estadisticas.html">Estadísticas</a></li>
-    </ul>
-</div>
-<div class="main-content">
-    <h2>Facturación</h2><p>Consulta el historial de pagos y facturas pendientes.</p>
-</div>
+  <main>
+    <h2>Facturación</h2>
+    <input type="text" id="searchInput" placeholder="Buscar estudiante..." />
+    <ul id="studentList"></ul>
 
+    <div id="paymentDetails" style="display:none;">
+      <h3 id="studentName"></h3>
+      <ul id="paymentHistory"></ul>
+      <h4>Registrar nuevo pago</h4>
+      <form id="paymentForm">
+        <input type="number" id="monto" placeholder="Monto" required />
+        <button type="submit">Registrar pago</button>
+      </form>
+      <button id="printInvoice">Imprimir factura</button>
+    </div>
+  </main>
+
+  <script>
+    const role = localStorage.getItem('userRole');
+    const user = localStorage.getItem('userName') || 'Usuario';
+    if (!role) window.location.href = 'index.html';
+
+    // Filtrar sidebar
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      const allowedRoles = link.getAttribute('data-role');
+      if (!allowedRoles || allowedRoles === 'all') return;
+      if (!allowedRoles.includes(role)) link.style.display = 'none';
+    });
+
+    let estudiantes = [];
+    let estudianteSeleccionado = null;
+
+    async function fetchEstudiantes() {
+      const res = await fetch('https://tu-backend/render-url.com/api/estudiantes');
+      estudiantes = await res.json();
+      renderEstudiantes(estudiantes);
+    }
+
+    function renderEstudiantes(data) {
+      const list = document.getElementById('studentList');
+      list.innerHTML = '';
+      data.forEach(est => {
+        const li = document.createElement('li');
+        li.textContent = est.nombre;
+        li.onclick = () => seleccionarEstudiante(est);
+        list.appendChild(li);
+      });
+    }
+
+    function seleccionarEstudiante(est) {
+      estudianteSeleccionado = est;
+      document.getElementById('studentName').textContent = est.nombre;
+      document.getElementById('paymentDetails').style.display = 'block';
+      fetchPagos(est._id);
+    }
+
+    async function fetchPagos(id) {
+      const res = await fetch(`https://tu-backend/render-url.com/api/pagos/${id}`);
+      const pagos = await res.json();
+      const ul = document.getElementById('paymentHistory');
+      ul.innerHTML = '';
+      pagos.forEach(p => {
+        const li = document.createElement('li');
+        li.textContent = `${new Date(p.fecha).toLocaleDateString()} - RD$${p.monto} (Recibido por: ${p.recibidoPor})`;
+        ul.appendChild(li);
+      });
+    }
+
+    document.getElementById('paymentForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const monto = document.getElementById('monto').value;
+      await fetch('https://tu-backend/render-url.com/api/pagos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          estudianteId: estudianteSeleccionado._id,
+          fecha: new Date(),
+          monto,
+          recibidoPor: user
+        })
+      });
+      document.getElementById('monto').value = '';
+      fetchPagos(estudianteSeleccionado._id);
+    };
+
+    document.getElementById('printInvoice').onclick = () => {
+      const nombre = estudianteSeleccionado.nombre;
+      const monto = document.getElementById('monto').value;
+      const fecha = new Date().toLocaleDateString();
+      const factura = `
+        Colegio Inmaculada Concepción\nRNC: 132813634\n
+        Fecha: ${fecha}\n
+        Estudiante: ${nombre}\n
+        Monto: RD$${monto}\n
+        Recibido por: ${user}\n
+      `;
+      const win = window.open('', '', 'width=600,height=400');
+      win.document.write(`<pre>${factura}</pre>`);
+      win.print();
+      win.close();
+    };
+
+    document.getElementById('searchInput').oninput = (e) => {
+      const query = e.target.value.toLowerCase();
+      const filtrados = estudiantes.filter(est => est.nombre.toLowerCase().includes(query));
+      renderEstudiantes(filtrados);
+    };
+
+    fetchEstudiantes();
+  </script>
 </body>
 </html>
