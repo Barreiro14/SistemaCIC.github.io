@@ -5,22 +5,196 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Estudiantes | Gestor Escolar</title>
     <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
+    <style>
+        .estudiante {
+          padding: 0.5em;
+          border-bottom: 1px solid #ccc;
+          cursor: pointer;
+        }
+    
+        .detalles {
+          margin-top: 1em;
+          border: 1px solid #ccc;
+          padding: 1em;
+          border-radius: 8px;
+          display: none;
+        }
+    
+        #formulario-contenedor {
+          margin-top: 2em;
+          padding: 1em;
+          border: 1px solid #ccc;
+          border-radius: 8px;
+          display: none;
+        }
+    
+        input[type="search"] {
+          padding: 0.5em;
+          width: 100%;
+          margin-bottom: 1em;
+        }
+    
+        button {
+          padding: 0.5em 1em;
+          margin-top: 1em;
+          background-color: #004080;
+          color: white;
+          border: none;
+          cursor: pointer;
+        }
+      </style>
 </head>
 <body>
+    <div class="sidebar">
+        <a href="dashboard.html" data-role="all">
+            <span class="material-symbols-sharp">home</span>
+            Inicio
+        </a>
+        <a href="calificaciones.html" data-role="all">
+            <span class="material-symbols-sharp">grading</span>
+            Calificaciones
+        </a>
+        <a href="facturacion.html" data-role="director administrador">
+            <span class="material-symbols-sharp">attach_money</span>
+            Facturación
+        </a>
+        <a href="registro.html" data-role="director administrador">
+            <span class="material-symbols-sharp">folder_open</span>
+            Registro
+        </a>
+        <a data-role="all">
+            <span class="material-symbols-sharp">account_circle</span>
+            Account
+        </a>
+    </div>
+      
 
-<div class="sidebar">
-    <h2>Gestor Escolar</h2>
-    <ul>
-        <li><a href="dashboard.html">Inicio</a></li>
-        <li><a href="registro.html">Registro</a></li>
-        <li><a href="calificaciones.html">Calificaciones</a></li>
-        <li><a href="facturacion.html">Facturación</a></li>
-        <li><a href="estadisticas.html">Estadísticas</a></li>
-    </ul>
-</div>
-<div class="main-content">
-    <h2>Registro de Estudiantes</h2><p>Aquí podrás agregar, editar o eliminar estudiantes.</p>
-</div>
+    <main>
+        <h2>Estudiantes Inscritos</h2>
+    
+        <input type="search" id="busqueda" placeholder="Buscar por nombre..." />
+    
+        <ul id="lista-estudiantes"></ul>
+    
+        <div id="detalles-estudiante" class="detalles"></div>
+    
+        <button onclick="mostrarFormulario()">➕ Agregar Estudiante</button>
+    
+        <div id="formulario-contenedor">
+          <h3>Nuevo Estudiante</h3>
+          <form id="formulario-estudiante">
+            <input type="text" name="nombre" placeholder="Nombre" required />
+            <input type="text" name="grado" placeholder="Grado" required />
+            <input type="date" name="fechaNacimiento" required />
+            <input type="text" name="direccion" placeholder="Dirección" required />
+            <input type="text" name="telefono" placeholder="Teléfono" required />
+            <input type="text" name="contactoPadreTutor" placeholder="Contacto Padre/Tutor" required />
+            <input type="date" name="fechaIngreso" required />
+            <button type="submit">Guardar</button>
+          </form>
+        </div>
+      </main>
+    
+<script>
+    const role = localStorage.getItem('userRole');
+    const user = localStorage.getItem('userName') || 'Usuario';
 
+    // Show welcome name
+    document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
+
+    // Filter sidebar items by role
+    document.querySelectorAll('.sidebar a').forEach(link => {
+        const allowedRoles = link.getAttribute('data-role');
+        if (!allowedRoles || allowedRoles === 'all') return;
+
+        if (!allowedRoles.includes(role)) {
+            link.style.display = 'none';
+        }
+    });
+
+    // If no role is found, redirect to login
+    if (!role) {
+        window.location.href = 'index.html';
+    }
+</script>
+<script>
+    const API_URL = 'https://cicback.onrender.com/api/estudiantes';
+    let todosLosEstudiantes = [];
+
+    async function cargarEstudiantes() {
+      const res = await fetch(API_URL);
+      todosLosEstudiantes = await res.json();
+      mostrarEstudiantes(todosLosEstudiantes);
+    }
+
+    function mostrarEstudiantes(estudiantes) {
+      const lista = document.getElementById('lista-estudiantes');
+      lista.innerHTML = '';
+      estudiantes.forEach(est => {
+        const li = document.createElement('li');
+        li.className = 'estudiante';
+        li.textContent = est.nombre;
+        li.onclick = () => mostrarDetalles(est);
+        lista.appendChild(li);
+      });
+    }
+
+    function mostrarDetalles(est) {
+      const detalles = document.getElementById('detalles-estudiante');
+      detalles.innerHTML = `
+        <strong>Nombre:</strong> ${est.nombre}<br>
+        <strong>Grado:</strong> ${est.grado}<br>
+        <strong>Fecha de Nacimiento:</strong> ${new Date(est.fechaNacimiento).toLocaleDateString()}<br>
+        <strong>Dirección:</strong> ${est.direccion}<br>
+        <strong>Teléfono:</strong> ${est.telefono}<br>
+        <strong>Contacto Padre/Tutor:</strong> ${est.contactoPadreTutor}<br>
+        <strong>Fecha de Ingreso:</strong> ${new Date(est.fechaIngreso).toLocaleDateString()}<br>
+        <button onclick="eliminarEstudiante('${est._id}')">🗑️ Eliminar</button>
+      `;
+      detalles.style.display = 'block';
+    }
+
+    async function eliminarEstudiante(id) {
+      if (confirm('¿Estás seguro de eliminar este estudiante?')) {
+        await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        cargarEstudiantes();
+        document.getElementById('detalles-estudiante').style.display = 'none';
+      }
+    }
+
+    function mostrarFormulario() {
+      const contenedor = document.getElementById('formulario-contenedor');
+      contenedor.style.display = contenedor.style.display === 'none' ? 'block' : 'none';
+    }
+
+    document.getElementById('formulario-estudiante').addEventListener('submit', async e => {
+      e.preventDefault();
+      const datos = Object.fromEntries(new FormData(e.target).entries());
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
+      if (res.ok) {
+        e.target.reset();
+        cargarEstudiantes();
+        mostrarFormulario(); // Oculta el formulario
+      } else {
+        alert('Error al guardar estudiante');
+      }
+    });
+
+    document.getElementById('busqueda').addEventListener('input', (e) => {
+      const filtro = e.target.value.toLowerCase();
+      const filtrados = todosLosEstudiantes.filter(est =>
+        est.nombre.toLowerCase().includes(filtro)
+      );
+      mostrarEstudiantes(filtrados);
+    });
+
+    // Mostrar lista al cargar
+    cargarEstudiantes();
+  </script>
 </body>
 </html>
