@@ -34,30 +34,81 @@
 
     <main>
         <h2 id="welcome"></h2>
-        <p>Seleccione una sección del menú para comenzar.</p>
+
+        <section id="dashboard-content">
+            <!-- Sección solo para directores -->
+            <div id="create-user-section" style="display: none;">
+                <h3>Crear Usuario</h3>
+                <form id="create-user-form">
+                    <input type="text" placeholder="Nombre del usuario" required>
+                    <select required>
+                        <option value="profesor">Profesor</option>
+                        <option value="administrador">Administrador</option>
+                    </select>
+                    <input type="text" placeholder="Categoría (ej. Matemáticas, Francés)" required>
+                    <input type="text" placeholder="Grados asignados (separados por comas, ej. 6to, 4to)" required>
+                    <button type="submit">Crear</button>
+                </form>
+            </div>
+
+            <!-- Tablas de actividades recientes -->
+            <div>
+                <h3>Pagos recientes</h3>
+                <table id="tabla-pagos">
+                    <thead><tr><th>Estudiante</th><th>Monto</th><th>Recibido por</th><th>Fecha</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+
+            <div>
+                <h3>Notas recientes</h3>
+                <table id="tabla-notas">
+                    <thead><tr><th>Profesor</th><th>Estudiante</th><th>Nota</th><th>Fecha</th><th>Modificada</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </section>
     </main>
 
     <script>
         const role = localStorage.getItem('userRole');
         const user = localStorage.getItem('userName') || 'Usuario';
 
-        // Show welcome name
         document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
 
-        // Filter sidebar items by role
         document.querySelectorAll('.sidebar a').forEach(link => {
             const allowedRoles = link.getAttribute('data-role');
             if (!allowedRoles || allowedRoles === 'all') return;
-
-            if (!allowedRoles.includes(role)) {
-                link.style.display = 'none';
-            }
+            if (!allowedRoles.includes(role)) link.style.display = 'none';
         });
 
-        // If no role is found, redirect to login
-        if (!role) {
-            window.location.href = 'index.html';
+        if (!role) window.location.href = 'index.html';
+
+        // Mostrar sección de creación de usuarios solo al director
+        if (role === 'director') {
+            document.getElementById('create-user-section').style.display = 'block';
         }
+
+        // Llenar tablas desde la API
+        fetch('https://cicback.onrender.com/api/pagos/ultimos')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabla-pagos tbody');
+                data.forEach(p => {
+                    const row = `<tr><td>${p.estudiante}</td><td>${p.monto}</td><td>${p.recibidoPor}</td><td>${new Date(p.fecha).toLocaleDateString()}</td></tr>`;
+                    tbody.innerHTML += row;
+                });
+            });
+
+        fetch('https://cicback.onrender.com/api/notas/ultimas')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabla-notas tbody');
+                data.forEach(n => {
+                    const row = `<tr><td>${n.profesor}</td><td>${n.estudiante}</td><td>${n.valor}</td><td>${new Date(n.fecha).toLocaleDateString()}</td><td>${n.modificada ? 'Sí' : 'No'}</td></tr>`;
+                    tbody.innerHTML += row;
+                });
+            });
     </script>
 </body>
 </html>
