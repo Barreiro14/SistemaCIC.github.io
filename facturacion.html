@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Facturación | Gestor Escolar</title>
   <link rel="stylesheet" href="styles.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
 </head>
 <body>
     <div class="sidebar">
@@ -52,7 +53,7 @@
     const user = localStorage.getItem('userName') || 'Usuario';
     if (!role) window.location.href = 'index.html';
 
-    
+    // Filtrar sidebar
     document.querySelectorAll('.sidebar a').forEach(link => {
       const allowedRoles = link.getAttribute('data-role');
       if (!allowedRoles || allowedRoles === 'all') return;
