@@ -159,10 +159,10 @@
         tbody.innerHTML = '';
         data.forEach(p => {
           const row = `<tr>
-            <td>${p.estudiante.nombre}</td>
+            <td>${p.estudianteNombre}</td>
             <td>RD$${p.monto}</td>
             <td>${p.recibidoPor}</td>
-            <td>${new Date(p.fechaPago).toLocaleDateString()}</td>
+            <td>${new Date(p.fecha).toLocaleDateString()}</td>
           </tr>`;
           tbody.innerHTML += row;
         });
