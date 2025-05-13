@@ -1,114 +1,192 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Principal | Gestor Escolar</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel Principal | Gestor Escolar</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
+  <style>
+    #create-user-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 400px;
+      margin-top: 10px;
+    }
+
+    #create-user-form input,
+    #create-user-form select,
+    #create-user-form button {
+      padding: 8px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    h3 {
+      margin-top: 30px;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="sidebar">
-        <a href="dashboard.html" data-role="all">
-            <span class="material-symbols-sharp">home</span>
-            Inicio
-        </a>
-        <a href="calificaciones.html" data-role="all">
-            <span class="material-symbols-sharp">grading</span>
-            Calificaciones
-        </a>
-        <a href="facturacion.html" data-role="director administrador">
-            <span class="material-symbols-sharp">attach_money</span>
-            Facturación
-        </a>
-        <a href="registro.html" data-role="director administrador">
-            <span class="material-symbols-sharp">folder_open</span>
-            Registro
-        </a>
-        <a data-role="all">
-            <span class="material-symbols-sharp">account_circle</span>
-            Account
-        </a>
-    </div>
+  <div class="sidebar">
+    <a href="dashboard.html" data-role="all">
+      <span class="material-symbols-sharp">home</span> Inicio
+    </a>
+    <a href="calificaciones.html" data-role="all">
+      <span class="material-symbols-sharp">grading</span> Calificaciones
+    </a>
+    <a href="facturacion.html" data-role="director administrador">
+      <span class="material-symbols-sharp">attach_money</span> Facturación
+    </a>
+    <a href="registro.html" data-role="director administrador">
+      <span class="material-symbols-sharp">folder_open</span> Registro
+    </a>
+    <a data-role="all">
+      <span class="material-symbols-sharp">account_circle</span> Account
+    </a>
+  </div>
 
-    <main>
-        <h2 id="welcome"></h2>
+  <main>
+    <h2 id="welcome"></h2>
 
-        <section id="dashboard-content">
-            <!-- Sección solo para directores -->
-            <div id="create-user-section" style="display: none;">
-                <h3>Crear Usuario</h3>
-                <form id="create-user-form">
-                    <input type="text" placeholder="Nombre del usuario" required>
-                    <select required>
-                        <option value="profesor">Profesor</option>
-                        <option value="administrador">Administrador</option>
-                    </select>
-                    <input type="text" placeholder="Categoría (ej. Matemáticas, Francés)" required>
-                    <input type="text" placeholder="Grados asignados (separados por comas, ej. 6to, 4to)" required>
-                    <button type="submit">Crear</button>
-                </form>
-            </div>
+    <section id="dashboard-content">
+      <!-- Sección solo para directores -->
+      <div id="create-user-section" class="hidden">
+        <h3>Crear Usuario</h3>
+        <form id="create-user-form">
+          <input type="text" id="user-name" placeholder="Nombre del usuario" required />
+          <select id="user-role" required>
+            <option value="" disabled selected>Selecciona un rol</option>
+            <option value="profesor">Profesor</option>
+            <option value="administrador">Administrador</option>
+          </select>
+          <input type="text" id="user-category" class="profesor-only hidden" placeholder="Categoría (ej. Matemáticas, Francés)" />
+          <input type="text" id="user-grades" class="profesor-only hidden" placeholder="Grados asignados (ej. 6to, 4to)" />
+          <button type="submit">Crear</button>
+        </form>
+      </div>
 
-            <!-- Tablas de actividades recientes -->
-            <div>
-                <h3>Pagos recientes</h3>
-                <table id="tabla-pagos">
-                    <thead><tr><th>Estudiante</th><th>Monto</th><th>Recibido por</th><th>Fecha</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
+      <!-- Tablas de actividades recientes -->
+      <div>
+        <h3>Pagos recientes</h3>
+        <table id="tabla-pagos">
+          <thead>
+            <tr>
+              <th>Estudiante</th>
+              <th>Monto</th>
+              <th>Recibido por</th>
+              <th>Fecha</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
 
-            <div>
-                <h3>Notas recientes</h3>
-                <table id="tabla-notas">
-                    <thead><tr><th>Profesor</th><th>Estudiante</th><th>Nota</th><th>Fecha</th><th>Modificada</th></tr></thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+      <div>
+        <h3>Notas recientes</h3>
+        <table id="tabla-notas">
+          <thead>
+            <tr>
+              <th>Profesor</th>
+              <th>Estudiante</th>
+              <th>Nota</th>
+              <th>Fecha</th>
+              <th>Modificada</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
-    <script>
-        const role = localStorage.getItem('userRole');
-        const user = localStorage.getItem('userName') || 'Usuario';
+  <script>
+    const role = localStorage.getItem('userRole');
+    const user = localStorage.getItem('userName') || 'Usuario';
 
-        document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
+    if (!role) window.location.href = 'index.html';
 
-        document.querySelectorAll('.sidebar a').forEach(link => {
-            const allowedRoles = link.getAttribute('data-role');
-            if (!allowedRoles || allowedRoles === 'all') return;
-            if (!allowedRoles.includes(role)) link.style.display = 'none';
+    document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
+
+    // Sidebar dinámica por rol
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      const allowedRoles = link.getAttribute('data-role');
+      if (!allowedRoles || allowedRoles === 'all') return;
+      if (!allowedRoles.includes(role)) link.style.display = 'none';
+    });
+
+    // Mostrar la sección de crear usuario solo a directores
+    if (role === 'director') {
+      document.getElementById('create-user-section').classList.remove('hidden');
+    }
+
+    // Mostrar/ocultar campos según rol
+    document.getElementById('user-role').addEventListener('change', function () {
+      const isProfesor = this.value === 'profesor';
+      document.querySelectorAll('.profesor-only').forEach(el => {
+        el.classList.toggle('hidden', !isProfesor);
+        el.required = isProfesor;
+      });
+    });
+
+    // Fetch pagos recientes
+    fetch('https://cicback.onrender.com/api/pagos/ultimos')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#tabla-pagos tbody');
+        tbody.innerHTML = '';
+        data.forEach(p => {
+          const row = `<tr>
+            <td>${p.estudiante.nombre}</td>
+            <td>RD$${p.monto}</td>
+            <td>${p.recibidoPor}</td>
+            <td>${new Date(p.fechaPago).toLocaleDateString()}</td>
+          </tr>`;
+          tbody.innerHTML += row;
         });
+      })
+      .catch(err => console.error('Error cargando pagos recientes:', err));
 
-        if (!role) window.location.href = 'index.html';
-
-        // Mostrar sección de creación de usuarios solo al director
-        if (role === 'director') {
-            document.getElementById('create-user-section').style.display = 'block';
-        }
-
-        // Llenar tablas desde la API
-        fetch('https://cicback.onrender.com/api/pagos/ultimos')
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.querySelector('#tabla-pagos tbody');
-                data.forEach(p => {
-                    const row = `<tr><td>${p.estudiante}</td><td>${p.monto}</td><td>${p.recibidoPor}</td><td>${new Date(p.fecha).toLocaleDateString()}</td></tr>`;
-                    tbody.innerHTML += row;
-                });
-            });
-
-        fetch('https://cicback.onrender.com/api/notas/ultimas')
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.querySelector('#tabla-notas tbody');
-                data.forEach(n => {
-                    const row = `<tr><td>${n.profesor}</td><td>${n.estudiante}</td><td>${n.valor}</td><td>${new Date(n.fecha).toLocaleDateString()}</td><td>${n.modificada ? 'Sí' : 'No'}</td></tr>`;
-                    tbody.innerHTML += row;
-                });
-            });
-    </script>
+    // Fetch notas recientes
+    fetch('https://cicback.onrender.com/api/notas/ultimas')
+      .then(res => res.json())
+      .then(data => {
+        const tbody = document.querySelector('#tabla-notas tbody');
+        tbody.innerHTML = '';
+        data.forEach(n => {
+          const row = `<tr>
+            <td>${n.profesor}</td>
+            <td>${n.estudiante}</td>
+            <td>${n.valor}</td>
+            <td>${new Date(n.fecha).toLocaleDateString()}</td>
+            <td>${n.modificada ? 'Sí' : 'No'}</td>
+          </tr>`;
+          tbody.innerHTML += row;
+        });
+      })
+      .catch(err => console.error('Error cargando notas recientes:', err));
+  </script>
 </body>
 </html>
