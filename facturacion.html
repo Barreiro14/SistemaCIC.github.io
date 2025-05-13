@@ -1,145 +1,162 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Facturación | Gestor Escolar</title>
-  <link rel="stylesheet" href="styles.css"/>
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facturación | Gestor Escolar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
-<body>
-    <div class="sidebar">
-        <a href="dashboard.html" data-role="all">
-            <span class="material-symbols-sharp">home</span>
-            Inicio
-        </a>
-        <a href="calificaciones.html" data-role="all">
-            <span class="material-symbols-sharp">grading</span>
-            Calificaciones
-        </a>
-        <a href="facturacion.html" data-role="director administrador">
-            <span class="material-symbols-sharp">attach_money</span>
-            Facturación
-        </a>
-        <a href="registro.html" data-role="director administrador">
-            <span class="material-symbols-sharp">folder_open</span>
-            Registro
-        </a>
-        <a data-role="all">
-            <span class="material-symbols-sharp">account_circle</span>
-            Account
-        </a>
+<body class="bg-gray-100 p-6">
+    <div class="sidebar fixed top-0 left-0 h-full bg-white shadow-lg w-64 p-4">
+        <div class="logo text-2xl font-semibold text-gray-800 mb-8">Gestor Escolar</div>
+        <nav class="space-y-2">
+            <a href="dashboard.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">home</span>
+                Inicio
+            </a>
+            <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">grading</span>
+                Calificaciones
+            </a>
+            <a href="facturacion.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md  text-blue-600 hover:bg-blue-100 transition-colors bg-blue-100">
+                <span class="material-symbols-sharp">attach_money</span>
+                Facturación
+            </a>
+            <a href="registro.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">folder_open</span>
+                Registro
+            </a>
+            <a data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">account_circle</span>
+                Account
+            </a>
+        </nav>
     </div>
 
-  <main>
-    <h2>Facturación</h2>
-    <input type="text" id="searchInput" placeholder="Buscar estudiante..." />
-    <ul id="studentList"></ul>
+    <main class="ml-64 p-8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Facturación</h2>
+        <input type="text" id="searchInput" placeholder="Buscar estudiante..." class="w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300 mb-4" />
+        <ul id="studentList" class="bg-white rounded-md shadow-md p-4 space-y-2">
+            </ul>
 
-    <div id="paymentDetails" style="display:none;">
-      <h3 id="studentName"></h3>
-      <ul id="paymentHistory"></ul>
-      <h4>Registrar nuevo pago</h4>
-      <form id="paymentForm">
-        <input type="number" id="monto" placeholder="Monto" required />
-        <button type="submit">Registrar pago</button>
-      </form>
-      <button id="printInvoice">Imprimir factura</button>
-    </div>
-  </main>
+        <div id="paymentDetails" style="display:none;" class="bg-white rounded-md shadow-lg p-6 mt-6 space-y-4">
+            <h3 id="studentName" class="text-2xl font-semibold text-gray-800"></h3>
+            <ul id="paymentHistory" class="border-t border-gray-200 pt-4 space-y-2">
+                </ul>
+            <h4 class="text-lg font-semibold text-gray-700">Registrar nuevo pago</h4>
+            <form id="paymentForm" class="flex items-end gap-4">
+                <input type="number" id="monto" placeholder="Monto" required class="p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300 w-48" />
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-5 rounded-md transition-colors duration-200">Registrar pago</button>
+            </form>
+            <button id="printInvoice" class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2.5 px-5 rounded-md transition-colors duration-200 w-48">Imprimir factura</button>
+        </div>
+    </main>
 
-  <script>
-    const role = localStorage.getItem('userRole');
-    const user = localStorage.getItem('userName') || 'Usuario';
-    if (!role) window.location.href = 'index.html';
+    <script>
+        const role = localStorage.getItem('userRole');
+        const user = localStorage.getItem('userName') || 'Usuario';
+        if (!role) window.location.href = 'index.html';
 
-    // Filtrar sidebar
-    document.querySelectorAll('.sidebar a').forEach(link => {
-      const allowedRoles = link.getAttribute('data-role');
-      if (!allowedRoles || allowedRoles === 'all') return;
-      if (!allowedRoles.includes(role)) link.style.display = 'none';
-    });
+        // Filtrar sidebar
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            const allowedRoles = link.getAttribute('data-role');
+            if (!allowedRoles || allowedRoles === 'all') return;
+            if (!allowedRoles.includes(role)) link.style.display = 'none';
+        });
 
-    let estudiantes = [];
-    let estudianteSeleccionado = null;
+        let estudiantes = [];
+        let estudianteSeleccionado = null;
 
-    async function fetchEstudiantes() {
-      const res = await fetch('https://cicback.onrender.com/api/estudiantes');
-      estudiantes = await res.json();
-      renderEstudiantes(estudiantes);
-    }
+        async function fetchEstudiantes() {
+            const res = await fetch('https://cicback.onrender.com/api/estudiantes');
+            estudiantes = await res.json();
+            renderEstudiantes(estudiantes);
+        }
 
-    function renderEstudiantes(data) {
-      const list = document.getElementById('studentList');
-      list.innerHTML = '';
-      data.forEach(est => {
-        const li = document.createElement('li');
-        li.textContent = est.nombre;
-        li.onclick = () => seleccionarEstudiante(est);
-        list.appendChild(li);
-      });
-    }
+        function renderEstudiantes(data) {
+            const list = document.getElementById('studentList');
+            list.innerHTML = '';
+            data.forEach(est => {
+                const li = document.createElement('li');
+                li.textContent = est.nombre;
+                li.className = "cursor-pointer p-2 rounded-md hover:bg-gray-100 transition-colors";
+                li.onclick = () => seleccionarEstudiante(est);
+                list.appendChild(li);
+            });
+        }
 
-    function seleccionarEstudiante(est) {
-      estudianteSeleccionado = est;
-      document.getElementById('studentName').textContent = est.nombre;
-      document.getElementById('paymentDetails').style.display = 'block';
-      fetchPagos(est._id);
-    }
+        function seleccionarEstudiante(est) {
+            estudianteSeleccionado = est;
+            document.getElementById('studentName').textContent = est.nombre;
+            document.getElementById('paymentDetails').style.display = 'block';
+            fetchPagos(est._id);
+        }
 
-    async function fetchPagos(id) {
-      const res = await fetch(`https://cicback.onrender.com/api/pagos/${id}`);
-      const pagos = await res.json();
-      const ul = document.getElementById('paymentHistory');
-      ul.innerHTML = '';
-      pagos.forEach(p => {
-        const li = document.createElement('li');
-        li.textContent = `${new Date(p.fecha).toLocaleDateString()} - RD$${p.monto} (Recibido por: ${p.recibidoPor})`;
-        ul.appendChild(li);
-      });
-    }
+        async function fetchPagos(id) {
+            const res = await fetch(`https://cicback.onrender.com/api/pagos/${id}`);
+            const pagos = await res.json();
+            const ul = document.getElementById('paymentHistory');
+            ul.innerHTML = '';
+            pagos.forEach(p => {
+                const li = document.createElement('li');
+                li.textContent = `${new Date(p.fecha).toLocaleDateString()} - RD$${p.monto} (Recibido por: ${p.recibidoPor})`;
+                li.className = "py-1 border-b border-gray-200 last:border-none";
+                ul.appendChild(li);
+            });
+        }
 
-    document.getElementById('paymentForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const monto = document.getElementById('monto').value;
-      await fetch('https://cicback.onrender.com/api/pagos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          estudianteId: estudianteSeleccionado._id,
-          fecha: new Date(),
-          monto,
-          recibidoPor: user
-        })
-      });
-      document.getElementById('monto').value = '';
-      fetchPagos(estudianteSeleccionado._id);
-    };
+        document.getElementById('paymentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const monto = document.getElementById('monto').value;
+            await fetch('https://cicback.onrender.com/api/pagos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    estudianteId: estudianteSeleccionado._id,
+                    fecha: new Date(),
+                    monto,
+                    recibidoPor: user
+                })
+            });
+            document.getElementById('monto').value = '';
+            fetchPagos(estudianteSeleccionado._id);
+        };
 
-    document.getElementById('printInvoice').onclick = () => {
-      const nombre = estudianteSeleccionado.nombre;
-      const monto = document.getElementById('monto').value;
-      const fecha = new Date().toLocaleDateString();
-      const factura = `
-        Colegio Inmaculada Concepción\nRNC: 132813634\n
-        Fecha: ${fecha}\n
-        Estudiante: ${nombre}\n
-        Monto: RD$${monto}\n
-        Recibido por: ${user}\n
-      `;
-      const win = window.open('', '', 'width=600,height=400');
-      win.document.write(`<pre>${factura}</pre>`);
-      win.print();
-      win.close();
-    };
+        document.getElementById('printInvoice').onclick = () => {
+            const nombre = estudianteSeleccionado.nombre;
+            const monto = document.getElementById('monto').value;
+            const fecha = new Date().toLocaleDateString();
+            const factura = `
+        <div style="font-family: 'Inter', sans-serif; width: 300px; padding: 20px; border: 1px solid #ccc; border-radius: 8px; margin: 0 auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <h2 style="font-size: 1.5rem; font-weight: 600; color: #333; margin-bottom: 10px;">Colegio Inmaculada Concepción</h2>
+            <p style="font-size: 0.875rem; color: #555; margin-bottom: 5px;">RNC: 132813634</p>
+            <p style="font-size: 0.875rem; color: #555; margin-bottom: 10px;">Fecha: ${fecha}</p>
+            <hr style="border: 1px solid #eee; margin: 10px 0;">
+            <h3 style="font-size: 1.125rem; font-weight: 600; color: #333; margin-bottom: 5px;">Estudiante: ${nombre}</h3>
+            <p style="font-size: 1rem; font-weight: 500; color: #222; margin-bottom: 15px;">Monto: RD$${monto}</p>
+            <p style="font-size: 0.875rem; color: #555;">Recibido por: ${user}</p>
+        </div>
+            `;
+            const win = window.open('', '', 'width=600,height=400');
+            win.document.body.innerHTML = factura;
+            win.print();
+            win.close();
+        };
 
-    document.getElementById('searchInput').oninput = (e) => {
-      const query = e.target.value.toLowerCase();
-      const filtrados = estudiantes.filter(est => est.nombre.toLowerCase().includes(query));
-      renderEstudiantes(filtrados);
-    };
+        document.getElementById('searchInput').oninput = (e) => {
+            const query = e.target.value.toLowerCase();
+            const filtrados = estudiantes.filter(est => est.nombre.toLowerCase().includes(query));
+            renderEstudiantes(filtrados);
+        };
 
-    fetchEstudiantes();
-  </script>
+        fetchEstudiantes();
+    </script>
 </body>
 </html>
