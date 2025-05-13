@@ -77,6 +77,7 @@
         <h3>Crear Usuario</h3>
         <form id="create-user-form">
           <input type="text" id="user-name" placeholder="Nombre del usuario" required />
+          <input type="email" id="user-email" placeholder="Correo electrónico" required />
           <select id="user-role" required>
             <option value="" disabled selected>Selecciona un rol</option>
             <option value="profesor">Profesor</option>
@@ -86,6 +87,7 @@
           <input type="text" id="user-grades" class="profesor-only hidden" placeholder="Grados asignados (ej. 6to, 4to)" />
           <button type="submit">Crear</button>
         </form>
+        <div id="contrasena-generada" style="margin-top: 10px; font-weight: bold;"></div>
       </div>
 
       <!-- Tablas de actividades recientes -->
