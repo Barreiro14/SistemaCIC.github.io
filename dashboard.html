@@ -88,37 +88,7 @@
       </form>
       <div id="contrasena-generada" style="margin-top: 10px; font-weight: bold;"></div>
       
-      <script>
-        document.getElementById('create-user-form').addEventListener('submit', (event) => {
-          event.preventDefault();
       
-          const nombre = document.getElementById('user-name').value;
-          const correo = document.getElementById('user-email').value;
-          const rol = document.getElementById('user-role').value;
-          const categoria = document.getElementById('user-category').value;
-          const grados = document.getElementById('user-grades').value;
-      
-          fetch('https://cicback.onrender.com/api/usuarios', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ nombre, correo, rol, categoria, grados })
-          })
-          .then(res => res.json())
-          .then(data => {
-            if (data.error) {
-              alert('Error al crear usuario: ' + data.error);
-            } else {
-              alert('Usuario creado con éxito. Contraseña generada: ' + data.contraseña);
-              document.getElementById('contrasena-generada').textContent = 'Contraseña Generada: ' + data.contraseña;
-              document.getElementById('create-user-form').reset();
-            }
-          })
-          .catch(error => {
-            console.error('Error al crear usuario:', error);
-            alert('Error al crear usuario.  ' + error);
-          });
-        });
-      </script>
       
 
       <!-- Tablas de actividades recientes -->
@@ -220,6 +190,37 @@
         });
       })
       .catch(err => console.error('Error cargando notas recientes:', err));
+  </script>
+  <script>
+    document.getElementById('create-user-form').addEventListener('submit', (event) => {
+      event.preventDefault();
+  
+      const nombre = document.getElementById('user-name').value;
+      const correo = document.getElementById('user-email').value;
+      const rol = document.getElementById('user-role').value;
+      const categoria = document.getElementById('user-category').value;
+      const grados = document.getElementById('user-grades').value;
+  
+      fetch('https://cicback.onrender.com/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, correo, rol, categoria, grados })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert('Error al crear usuario: ' + data.error);
+        } else {
+          alert('Usuario creado con éxito. Contraseña generada: ' + data.contraseña);
+          document.getElementById('contrasena-generada').textContent = 'Contraseña Generada: ' + data.contraseña;
+          document.getElementById('create-user-form').reset();
+        }
+      })
+      .catch(error => {
+        console.error('Error al crear usuario:', error);
+        alert('Error al crear usuario.  ' + error);
+      });
+    });
   </script>
 </body>
 </html>
