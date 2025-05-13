@@ -4,98 +4,242 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registro de Estudiantes | Gestor Escolar</title>
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
         .estudiante {
-          padding: 0.5em;
-          border-bottom: 1px solid #ccc;
-          cursor: pointer;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            border-radius: 0.75rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
         }
-    
+        .estudiante:hover {
+            background-color: #f7fafc;
+            transform: translateY(-4px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
         .detalles {
-          margin-top: 1em;
-          border: 1px solid #ccc;
-          padding: 1em;
-          border-radius: 8px;
-          display: none;
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 1rem;
+            background-color: white;
+            box-shadow: 0 6px 8px -3px rgba(0, 0, 0, 0.1), 0 3px 5px -2px rgba(0, 0, 0, 0.05);
+            display: none;
+            gap: 2rem;
+            animation: fadeIn 0.5s ease;
+            border: 1px solid #edf2f7;
         }
-    
-        #formulario-contenedor {
-          margin-top: 2em;
-          padding: 1em;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          display: none;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-    
-        input[type="search"] {
-          padding: 0.5em;
-          width: 100%;
-          margin-bottom: 1em;
+        .detalles h3{
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+            letter-spacing: -0.025em;
         }
-    
-        button {
-          padding: 0.5em 1em;
-          margin-top: 1em;
-          background-color: #004080;
-          color: white;
-          border: none;
-          cursor: pointer;
-        }
-      </style>
-</head>
-<body>
-    <div class="sidebar">
-        <a href="dashboard.html" data-role="all">
-            <span class="material-symbols-sharp">home</span>
-            Inicio
-        </a>
-        <a href="calificaciones.html" data-role="all">
-            <span class="material-symbols-sharp">grading</span>
-            Calificaciones
-        </a>
-        <a href="facturacion.html" data-role="director administrador">
-            <span class="material-symbols-sharp">attach_money</span>
-            Facturación
-        </a>
-        <a href="registro.html" data-role="director administrador">
-            <span class="material-symbols-sharp">folder_open</span>
-            Registro
-        </a>
-        <a data-role="all">
-            <span class="material-symbols-sharp">account_circle</span>
-            Account
-        </a>
-    </div>
-      
 
-    <main>
-        <h2>Estudiantes Inscritos</h2>
-    
-        <input type="search" id="busqueda" placeholder="Buscar por nombre..." />
-    
-        <ul id="lista-estudiantes"></ul>
-    
-        <div id="detalles-estudiante" class="detalles"></div>
-    
-        <button onclick="mostrarFormulario()">➕ Agregar Estudiante</button>
-    
+        .detalles p{
+            font-size: 1.1rem;
+            color: #4b5563;
+            line-height: 1.85rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid #f1f5f9;
+            margin-bottom: 0.75rem;
+        }
+        .detalles p:last-child{
+            border-bottom: none;
+            padding-bottom: 0;
+            margin-bottom: 0;
+        }
+
+        #formulario-contenedor {
+            margin-top: 2rem;
+            padding: 2rem;
+            border-radius: 1rem;
+            background-color: white;
+            box-shadow: 0 6px 8px -3px rgba(0, 0, 0, 0.1), 0 3px 5px -2px rgba(0, 0, 0, 0.05);
+            display: none;
+            animation: slideIn 0.5s ease-out;
+            border: 1px solid #edf2f7;
+        }
+        @keyframes slideIn {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        #formulario-contenedor h3{
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: #1e293b;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.05);
+            letter-spacing: -0.025em;
+        }
+
+        input[type="search"] {
+            padding: 1rem;
+            width: 100%;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+            margin-bottom: 2rem;
+            font-size: 1.2rem;
+            focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        input[type="search"]:focus{
+             border-color: #3b82f6;
+             box-shadow: 0 6px 8px -3px rgba(0, 0, 0, 0.1), 0 3px 5px -2px rgba(0, 0, 0, 0.07);
+        }
+
+        button {
+            padding: 1rem 2.5rem;
+            margin-top: 2rem;
+            background-color: #004080;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 0.75rem;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            font-size: 1.2rem;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
+            font-weight: 600;
+        }
+        button:hover{
+            background-color: #003366;
+            transform: translateY(-4px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        button:active{
+             transform: translateY(0);
+             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        form input{
+            padding: 0.8rem;
+            border-radius: 0.75rem;
+            border: 1px solid #d1d5db;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            width: 100%;
+            focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+         form input:focus{
+             border-color: #3b82f6;
+             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        .form-group{
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1.5rem;
+        }
+        .form-group label{
+             margin-bottom: 0.5rem;
+             font-weight: 600;
+             color: #1f2937;
+             font-size: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="sidebar fixed top-0 left-0 h-full bg-white shadow-lg w-64 p-4">
+        <div class="logo text-2xl font-semibold text-gray-800 mb-8">Gestor Escolar</div>
+        <nav class="space-y-2">
+            <a href="dashboard.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">home</span>
+                Inicio
+            </a>
+            <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">grading</span>
+                Calificaciones
+            </a>
+            <a href="facturacion.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">attach_money</span>
+                Facturación
+            </a>
+            <a href="registro.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-100 transition-colors">
+                <span class="material-symbols-sharp">folder_open</span>
+                Registro
+            </a>
+            <a data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">account_circle</span>
+                Account
+            </a>
+        </nav>
+    </div>
+
+    <main class="ml-64 p-8">
+        <h2 class="text-3xl font-semibold text-gray-800 mb-6">Estudiantes Inscritos</h2>
+
+        <input type="search" id="busqueda" placeholder="Buscar por nombre..." class="w-full" />
+
+        <ul id="lista-estudiantes" class="mt-6 space-y-4">
+            </ul>
+
+        <div id="detalles-estudiante" class="detalles">
+             </div>
+
+        <button onclick="mostrarFormulario()" class="mt-8">➕ Agregar Estudiante</button>
+
         <div id="formulario-contenedor">
-          <h3>Nuevo Estudiante</h3>
-          <form id="formulario-estudiante">
-            <input type="text" name="nombre" placeholder="Nombre" required />
-            <input type="text" name="grado" placeholder="Grado" required />
-            <input type="date" name="fechaNacimiento" required />
-            <input type="text" name="direccion" placeholder="Dirección" required />
-            <input type="text" name="telefono" placeholder="Teléfono" required />
-            <input type="text" name="contactoPadreTutor" placeholder="Contacto Padre/Tutor" required />
-            <input type="date" name="fechaIngreso" required />
-            <button type="submit">Guardar</button>
-          </form>
+            <h3 class="text-2xl font-semibold text-gray-800 mb-6">Nuevo Estudiante</h3>
+            <form id="formulario-estudiante">
+                <div class="form-group">
+                    <label for="nombre">Nombre</label>
+                    <input type="text" name="nombre" id="nombre" placeholder="Nombre" required />
+                </div>
+                <div class="form-group">
+                    <label for="grado">Grado</label>
+                    <input type="text" name="grado" id="grado" placeholder="Grado" required />
+                 </div>
+                <div class="form-group">
+                    <label for="fechaNacimiento">Fecha de Nacimiento</label>
+                    <input type="date" name="fechaNacimiento" id="fechaNacimiento" required />
+                </div>
+                <div class="form-group">
+                    <label for="direccion">Dirección</label>
+                    <input type="text" name="direccion" id="direccion" placeholder="Dirección" required />
+                </div>
+                <div class="form-group">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" name="telefono" id="telefono" placeholder="Teléfono" required />
+                </div>
+                <div class="form-group">
+                    <label for="contactoPadreTutor">Contacto Padre/Tutor</label>
+                    <input type="text" name="contactoPadreTutor" id="contactoPadreTutor" placeholder="Contacto Padre/Tutor" required />
+                </div>
+                 <div class="form-group">
+                    <label for="fechaIngreso">Fecha de Ingreso</label>
+                    <input type="date" name="fechaIngreso" id="fechaIngreso" required />
+                </div>
+                <button type="submit">Guardar</button>
+            </form>
         </div>
-      </main>
-    
+    </main>
+
 <script>
     const role = localStorage.getItem('userRole');
     const user = localStorage.getItem('userName') || 'Usuario';
@@ -143,16 +287,18 @@
     function mostrarDetalles(est) {
       const detalles = document.getElementById('detalles-estudiante');
       detalles.innerHTML = `
-        <strong>Nombre:</strong> ${est.nombre}<br>
-        <strong>Grado:</strong> ${est.grado}<br>
-        <strong>Fecha de Nacimiento:</strong> ${new Date(est.fechaNacimiento).toLocaleDateString()}<br>
-        <strong>Dirección:</strong> ${est.direccion}<br>
-        <strong>Teléfono:</strong> ${est.telefono}<br>
-        <strong>Contacto Padre/Tutor:</strong> ${est.contactoPadreTutor}<br>
-        <strong>Fecha de Ingreso:</strong> ${new Date(est.fechaIngreso).toLocaleDateString()}<br>
-        <button onclick="eliminarEstudiante('${est._id}')">🗑️ Eliminar</button>
+        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Detalles del Estudiante</h3>
+        <p><strong class="font-medium text-gray-700">Nombre:</strong> <span class="text-gray-600">${est.nombre}</span></p>
+        <p><strong class="font-medium text-gray-700">Grado:</strong> <span class="text-gray-600">${est.grado}</span></p>
+        <p><strong class="font-medium text-gray-700">Fecha de Nacimiento:</strong> <span class="text-gray-600">${new Date(est.fechaNacimiento).toLocaleDateString()}</span></p>
+        <p><strong class="font-medium text-gray-700">Dirección:</strong> <span class="text-gray-600">${est.direccion}</span></p>
+        <p><strong class="font-medium text-gray-700">Teléfono:</strong> <span class="text-gray-600">${est.telefono}</span></p>
+        <p><strong class="font-medium text-gray-700">Contacto Padre/Tutor:</strong> <span class="text-gray-600">${est.contactoPadreTutor}</span></p>
+        <p><strong class="font-medium text-gray-700">Fecha de Ingreso:</strong> <span class="text-gray-600">${new Date(est.fechaIngreso).toLocaleDateString()}</span></p>
+        <button onclick="eliminarEstudiante('${est._id}')" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-5 rounded-md transition-colors duration-200">🗑️ Eliminar</button>
       `;
-      detalles.style.display = 'block';
+      detalles.style.display = 'flex';
+      detalles.style.flexDirection = 'column';
     }
 
     async function eliminarEstudiante(id) {
