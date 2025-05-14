@@ -22,7 +22,7 @@
     <div class="sidebar fixed top-0 left-0 h-full bg-white shadow-lg w-64 p-4">
         <div class="logo text-2xl font-semibold text-gray-800 mb-8">Gestor Escolar</div>
         <nav class="space-y-2">
-            <a href="dashboard.html" data-role="director" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-100 transition-colors">
+            <a href="dashboard.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-100 transition-colors">
                 <span class="material-symbols-sharp">home</span> Inicio
             </a>
             <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
@@ -129,6 +129,53 @@
                 el.classList.toggle('hidden', !isProfesor);
                 el.required = isProfesor;
             });
+        });
+
+        // Manejar el envío del formulario de crear usuario
+        document.getElementById('create-user-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById('user-name').value;
+            const correo = document.getElementById('user-email').value;
+            const rol = document.getElementById('user-role').value;
+            const categoria = document.getElementById('user-category').value;
+            const grados = document.getElementById('user-grades').value;
+            
+            // Preparar los datos para enviar
+            const userData = {
+                nombre,
+                correo,
+                rol,
+                categoria: rol === 'profesor' ? categoria : undefined,
+                grados: rol === 'profesor' ? grados.split(',').map(g => g.trim()) : []
+            };
+            
+            try {
+                const response = await fetch('https://cicback.onrender.com/api/usuarios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    document.getElementById('contrasena-generada').innerText = 
+                        `Usuario creado exitosamente. Contraseña generada: ${result.contraseña}`;
+                    document.getElementById('create-user-form').reset();
+                    document.querySelectorAll('.profesor-only').forEach(el => {
+                        el.classList.add('hidden');
+                        el.required = false;
+                    });
+                } else {
+                    const error = await response.json();
+                    alert('Error al crear usuario: ' + error.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error al crear usuario. Verifica la conexión.');
+            }
         });
 
         // Fetch pagos recientes
