@@ -51,39 +51,52 @@ nav ul li a {
 
 /* Sidebar styles */
 .sidebar {
-    width: 220px;
-    height: 100vh;
     position: fixed;
-    background-color: #004080;
-    padding-top: 2em;
-    display: flex;
-    flex-direction: column;
-}
-
-.sidebar a {
+    top: 0;
+    left: 0;
+    height: 100%;
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 240px;
+    padding: 1rem;
+  }
+  .sidebar a {
     display: flex;
     align-items: center;
-    padding: 1em;
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.sidebar a:hover {
-    background-color: #0059b3;
-}
-
-.sidebar a.active {
-    background-color: #0074d9;
-}
-
-.sidebar a span {
-    margin-right: 0.5em;
-}
+    gap: 1rem;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    color: #6b7280;
+    transition: background-color 0.3s ease;
+  }
+  .sidebar a:hover {
+    background-color: #f3f4f6;
+    color: #374151;
+  }
+  .sidebar a.active {
+    background-color: #e0f2fe;
+    color: #06b6d4;
+    font-weight: 600;
+  }
 
 /* Main content spacing */
 main {
     margin-left: 240px;
     padding: 2em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1em;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 0.5em;
+    text-align: left;
+}
+
+th {
+    background-color: #f0f0f0;
 }
