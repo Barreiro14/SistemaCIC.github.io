@@ -1,26 +1,346 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Calificaciones | Gestor Escolar</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calificaciones | Gestor Escolar</title>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:wght@400;500;600&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      width: 240px;
+      padding: 1rem;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      color: #6b7280;
+      transition: background-color 0.3s ease;
+    }
+    .sidebar a:hover {
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    .sidebar a.active {
+      background-color: #e0f2fe;
+      color: #06b6d4;
+      font-weight: 600;
+    }
+    main {
+      margin-left: 240px;
+      padding: 2rem;
+    }
+    .estudiante-link {
+      cursor: pointer;
+      color: #06b6d4;
+      text-decoration: underline;
+    }
+    .estudiante-link:hover {
+      color: #0369a1;
+    }
+    .calificacion-input {
+      width: 80px;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+    }
+    .comentario-input {
+      width: 200px;
+      padding: 0.5rem;
+      border-radius: 0.375rem;
+      border: 1px solid #d1d5db;
+      font-size: 1rem;
+    }
+    .guardar-button {
+      padding: 0.75rem 1.5rem;
+      background-color: #10b981;
+      color: white;
+      border-radius: 0.375rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    .guardar-button:hover {
+      background-color: #059669;
+    }
+    .alert {
+      padding: 1rem;
+      border-radius: 0.375rem;
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    .alert-success {
+      background-color: #f0fdf4;
+      color: #15803d;
+      border: 1px solid #16a34a;
+    }
+    .alert-error {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      border: 1px solid #ef4444;
+    }
+  </style>
 </head>
 <body>
+  <div class="sidebar">
+    <div class="logo text-2xl font-semibold text-gray-800 mb-6">Gestor Escolar</div>
+    <nav class="space-y-2">
+      <a href="dashboard.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+        <span class="material-symbols-sharp">home</span>
+        Inicio
+      </a>
+      <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700 active">
+        <span class="material-symbols-sharp">grading</span>
+        Calificaciones
+      </a>
+      <a href="facturacion.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+        <span class="material-symbols-sharp">attach_money</span>
+        Facturación
+      </a>
+      <a href="registro.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+        <span class="material-symbols-sharp">folder_open</span>
+        Registro
+      </a>
+      <a data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+        <span class="material-symbols-sharp">account_circle</span>
+        Account
+      </a>
+    </nav>
+  </div>
 
-<div class="sidebar">
-    <h2>Gestor Escolar</h2>
-    <ul>
-        <li><a href="dashboard.html">Inicio</a></li>
-        <li><a href="registro.html">Registro</a></li>
-        <li><a href="calificaciones.html">Calificaciones</a></li>
-        <li><a href="facturacion.html">Facturación</a></li>
-        <li><a href="estadisticas.html">Estadísticas</a></li>
-    </ul>
-</div>
-<div class="main-content">
-    <h2>Registro de Calificaciones</h2><p>Visualiza y edita las calificaciones de los estudiantes.</p>
-</div>
+  <main class="bg-gray-100">
+    <h2 class="text-3xl font-semibold text-gray-800 mb-6">Calificaciones</h2>
+    <div id="app">
+      </div>
+  </main>
 
+  <script>
+    const role = localStorage.getItem('userRole');
+    const user = localStorage.getItem('userName') || 'Usuario';
+    if (!role) window.location.href = 'index.html';
+
+    const appDiv = document.getElementById('app');
+    const API_URL = 'https://cicback.onrender.com/api';
+
+    function renderListaEstudiantes(estudiantes) {
+      let html = '<h3 class="text-2xl font-semibold text-gray-700 mb-4">Lista de Estudiantes</h3>';
+      html += '<ul class="space-y-2">';
+      estudiantes.forEach(estudiante => {
+        html += `<li class="estudiante-link text-blue-600 hover:text-blue-800 cursor-pointer" data-id="${estudiante._id}">${estudiante.nombre}</li>`;
+      });
+      html += '</ul>';
+      appDiv.innerHTML = html;
+
+      document.querySelectorAll('.estudiante-link').forEach(link => {
+        link.addEventListener('click', () => {
+          const estudianteId = link.dataset.id;
+          fetchNotasEstudiante(estudianteId);
+        });
+      });
+    }
+
+    function renderNotasEstudiante(estudiante, notas) {
+      let html = `<h3 class="text-2xl font-semibold text-gray-700 mb-4">Calificaciones de ${estudiante.nombre}</h3>`;
+      if (notas.length === 0) {
+        html += '<p class="text-gray-500">No hay calificaciones registradas para este estudiante.</p>';
+      } else {
+        html += '<table class="min-w-full bg-white rounded-md shadow-md">';
+        html += '  <thead class="bg-gray-100">';
+        html += '    <tr>';
+        html += '      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Asignatura</th>';
+        html += '      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nota</th>';
+        html += '      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Comentario</th>';
+        html += '    </tr>';
+        html += '  </thead>';
+        html += '<tbody class="bg-white divide-y divide-gray-200">';
+        notas.forEach(nota => {
+          html += '    <tr>';
+          html += `      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${nota.asignatura.nombre}</td>`;
+          html += `      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${nota.nota}</td>`;
+          html += `      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${nota.comentario || ''}</td>`;
+          html += '    </tr>';
+        });
+        html += '  </tbody>';
+        html += '</table>';
+      }
+      appDiv.innerHTML = html;
+    }
+
+    function renderCursosProfesor(cursos) {
+      let html = '<h3 class="text-2xl font-semibold text-gray-700 mb-4">Mis Cursos</h3>';
+      html += '<ul class="space-y-2">';
+      cursos.forEach(curso => {
+        html += `<li class="curso-link text-blue-600 hover:text-blue-800 cursor-pointer" data-id="${curso._id}">${curso.nombre} - ${curso.grado}</li>`;
+      });
+      html += '</ul>';
+      appDiv.innerHTML = html;
+
+      document.querySelectorAll('.curso-link').forEach(link => {
+        link.addEventListener('click', () => {
+          const cursoId = link.dataset.id;
+          fetchEstudiantesCurso(cursoId);
+        });
+      });
+    }
+
+    function renderEstudiantesCurso(cursoId, estudiantes) {
+      let html = `<h3 class="text-2xl font-semibold text-gray-700 mb-4">Estudiantes del Curso</h3>`;
+      html += '<form id="form-calificaciones" class="space-y-4">';
+      estudiantes.forEach(estudiante => {
+        html += `<div class="bg-white rounded-md shadow-sm p-4 flex items-center justify-between">
+                  <div>
+                    <p class="text-sm font-medium text-gray-900">${estudiante.nombre}</p>
+                    <p class="text-xs text-gray-500">ID: ${estudiante._id}</p>
+                  </div>
+                  <div class="flex items-center gap-4">
+                    <input type="number" name="nota-${estudiante._id}" placeholder="Nota" required class="calificacion-input" />
+                    <input type="text" name="comentario-${estudiante._id}" placeholder="Comentario (opcional)" class="comentario-input" />
+                  </div>
+                </div>`;
+      });
+      html += `<button type="submit" class="guardar-button">Guardar Calificaciones</button>`;
+      html += '</form>';
+      appDiv.innerHTML = html;
+
+      document.getElementById('form-calificaciones').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const formData = new FormData(e.target);
+        let hasErrors = false;
+        const calificaciones = estudiantes.map(estudiante => {
+          const nota = formData.get(`nota-${estudiante._id}`);
+          const comentario = formData.get(`comentario-${estudiante._id}`);
+          if (!nota || isNaN(Number(nota)) || Number(nota) < 0 || Number(nota) > 100) {
+            hasErrors = true;
+            return null; // O podrías lanzar un error
+          }
+          return {
+            estudianteId: estudiante._id,
+            nota: Number(nota),
+            comentario,
+          };
+        }).filter(Boolean); // Filtra los nulls
+
+        if (hasErrors) {
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'alert alert-error';
+          errorDiv.textContent = 'Por favor, ingrese notas válidas (0-100) para todos los estudiantes.';
+          appDiv.prepend(errorDiv);
+          return;
+        }
+
+        // Aquí necesitarías también el cursoId, puedes guardarlo en un data-attribute de un elemento superior
+        // Por ejemplo, en el li del curso, o en un div que envuelva el formulario
+        const cursoId = estudiantes[0].cursoId; // Esto es un ejemplo, ajústalo según tu lógica
+        console.log(calificaciones, cursoId);
+
+        const res = await fetch(`${API_URL}/calificaciones/${cursoId}`, { // Asegúrate de tener este endpoint en tu backend
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(calificaciones),
+        });
+
+        if (res.ok) {
+          const successDiv = document.createElement('div');
+          successDiv.className = 'alert alert-success';
+          successDiv.textContent = 'Calificaciones guardadas exitosamente.';
+          appDiv.prepend(successDiv);
+          e.target.reset(); // Limpia el formulario
+           setTimeout(() => {
+             successDiv.remove();
+           }, 3000);
+
+        } else {
+          const errorDiv = document.createElement('div');
+          errorDiv.className = 'alert alert-error';
+          errorDiv.textContent = 'Error al guardar las calificaciones.';
+          appDiv.prepend(errorDiv);
+        }
+      });
+    }
+
+    async function fetchEstudiantesCurso(cursoId) {
+  try {
+    const res = await fetch(`${API_URL}/cursos/${cursoId}/estudiantes`);
+    if (!res.ok) {
+      throw new Error(`Error al obtener estudiantes del curso: ${res.status}`);
+    }
+    const estudiantes = await res.json();
+
+    // Añade el cursoId a cada estudiante para usarlo al guardar las notas
+    estudiantes.forEach(estudiante => estudiante.cursoId = cursoId);
+    renderEstudiantesCurso(cursoId, estudiantes);
+  } catch (error) {
+    console.error("Error fetching estudiantes del curso:", error);
+    appDiv.innerHTML = `<div class="alert alert-error">No se pudieron obtener los estudiantes del curso. Por favor, inténtelo de nuevo más tarde.</div>`;
+  }
+}
+
+
+    async function fetchNotasEstudiante(estudianteId) {
+      try {
+        const res = await fetch(`${API_URL}/estudiantes/${estudianteId}/notas`);
+        if (!res.ok) {
+          throw new Error(`Error al obtener notas del estudiante: ${res.status}`);
+        }
+        const notas = await res.json();
+        const estudianteRes = await fetch(`${API_URL}/estudiantes/${estudianteId}`);
+        const estudianteData = await estudianteRes.json();
+        renderNotasEstudiante(estudianteData, notas);
+      } catch (error) {
+        console.error("Error fetching notas del estudiante:", error);
+        appDiv.innerHTML = `<div class="alert alert-error">No se pudieron obtener las notas del estudiante. Por favor, inténtelo de nuevo más tarde.</div>`;
+      }
+    }
+
+    async function fetchCursosProfesor() {
+      try {
+        const res = await fetch(`${API_URL}/profesores/${user}/cursos`); // Suponiendo que tienes un endpoint así
+        if (!res.ok) {
+          throw new Error(`Error al obtener cursos del profesor: ${res.status}`);
+        }
+        const cursos = await res.json();
+        renderCursosProfesor(cursos);
+      } catch (error) {
+        console.error("Error fetching cursos del profesor:", error);
+        appDiv.innerHTML = `<div class="alert alert-error">No se pudieron obtener sus cursos. Por favor, inténtelo de nuevo más tarde.</div>`;
+      }
+    }
+
+    async function fetchEstudiantes() {
+      try {
+        const res = await fetch(`${API_URL}/estudiantes`);
+        if (!res.ok) {
+          throw new Error(`Error al obtener estudiantes: ${res.status}`);
+        }
+        const estudiantes = await res.json();
+        renderListaEstudiantes(estudiantes);
+      } catch (error) {
+        console.error("Error fetching estudiantes:", error);
+        appDiv.innerHTML = `<div class="alert alert-error">No se pudieron obtener los estudiantes. Por favor, inténtelo de nuevo más tarde.</div>`;
+      }
+    }
+
+    if (role === 'director' || role === 'administrador') {
+      fetchEstudiantes();
+    } else if (role === 'profesor') {
+      fetchCursosProfesor();
+    }
+  </script>
 </body>
 </html>
