@@ -131,7 +131,17 @@
   <script>
     const role = localStorage.getItem('userRole');
     const user = localStorage.getItem('userName') || 'Usuario';
+
     if (!role) window.location.href = 'index.html';
+
+    document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
+
+        // Sidebar dinámica por rol
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            const allowedRoles = link.getAttribute('data-role');
+            if (!allowedRoles || allowedRoles === 'all') return;
+            if (!allowedRoles.includes(role)) link.style.display = 'none';
+        });
 
     const appDiv = document.getElementById('app');
     const API_URL = 'https://cicback.onrender.com/api';
