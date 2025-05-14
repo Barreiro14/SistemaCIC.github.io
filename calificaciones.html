@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Calificaciones | Gestor Escolar</title>
-  <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,7 +11,34 @@
     body {
       font-family: 'Inter', sans-serif;
     }
-    
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: white;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      width: 240px;
+      padding: 1rem;
+    }
+    .sidebar a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      color: #6b7280;
+      transition: background-color 0.3s ease;
+    }
+    .sidebar a:hover {
+      background-color: #f3f4f6;
+      color: #374151;
+    }
+    .sidebar a.active {
+      background-color: #e0f2fe;
+      color: #06b6d4;
+      font-weight: 600;
+    }
     main {
       margin-left: 240px;
       padding: 2rem;
@@ -71,12 +97,13 @@
 </head>
 <body>
   <div class="sidebar">
+    <div class="logo text-2xl font-semibold text-gray-800 mb-6">Gestor Escolar</div>
     <nav class="space-y-2">
-      <a href="dashboard.html" data-role="director" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+      <a href="dashboard.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
         <span class="material-symbols-sharp">home</span>
         Inicio
       </a>
-      <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700 active">
+      <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-100 transition-colors">
         <span class="material-symbols-sharp">grading</span>
         Calificaciones
       </a>
@@ -191,21 +218,26 @@
 
       document.getElementById('form-calificaciones').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
+        const formData = new FormData(e.target).entries();
         let hasErrors = false;
-        const calificaciones = estudiantes.map(estudiante => {
-          const nota = formData.get(`nota-${estudiante._id}`);
-          const comentario = formData.get(`comentario-${estudiante._id}`);
-          if (!nota || isNaN(Number(nota)) || Number(nota) < 0 || Number(nota) > 100) {
-            hasErrors = true;
-            return null; // O podrías lanzar un error
+        const calificaciones = [];
+
+        for (const [key, value] of formData) {
+          if (key.startsWith('nota-')) {
+            const estudianteId = key.split('-')[1];
+            const nota = Number(value);
+            const comentarioKey = `comentario-${estudianteId}`;
+            const comentario = formData.get(comentarioKey);
+
+            if (isNaN(nota) || nota < 0 || nota > 100) {
+              hasErrors = true;
+              break;
+            }
+
+            calificaciones.push({ estudianteId, nota, comentario });
           }
-          return {
-            estudianteId: estudiante._id,
-            nota: Number(nota),
-            comentario,
-          };
-        }).filter(Boolean); // Filtra los nulls
+        }
+
 
         if (hasErrors) {
           const errorDiv = document.createElement('div');
@@ -218,7 +250,7 @@
         // Aquí necesitarías también el cursoId, puedes guardarlo en un data-attribute de un elemento superior
         // Por ejemplo, en el li del curso, o en un div que envuelva el formulario
         const cursoId = estudiantes[0].cursoId; // Esto es un ejemplo, ajústalo según tu lógica
-        console.log(calificaciones, cursoId);
+
 
         const res = await fetch(`${API_URL}/calificaciones/${cursoId}`, { // Asegúrate de tener este endpoint en tu backend
           method: 'POST',
