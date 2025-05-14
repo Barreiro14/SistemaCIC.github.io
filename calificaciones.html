@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:wght@400;500;600&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
   <style>
     body {
       font-family: 'Inter', sans-serif;
@@ -104,7 +103,7 @@
         <span class="material-symbols-sharp">home</span>
         Inicio
       </a>
-      <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700 active">
+      <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-100 transition-colors">
         <span class="material-symbols-sharp">grading</span>
         Calificaciones
       </a>
@@ -219,21 +218,26 @@
 
       document.getElementById('form-calificaciones').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const formData = new FormData(e.target);
+        const formData = new FormData(e.target).entries();
         let hasErrors = false;
-        const calificaciones = estudiantes.map(estudiante => {
-          const nota = formData.get(`nota-${estudiante._id}`);
-          const comentario = formData.get(`comentario-${estudiante._id}`);
-          if (!nota || isNaN(Number(nota)) || Number(nota) < 0 || Number(nota) > 100) {
-            hasErrors = true;
-            return null; // O podrías lanzar un error
+        const calificaciones = [];
+
+        for (const [key, value] of formData) {
+          if (key.startsWith('nota-')) {
+            const estudianteId = key.split('-')[1];
+            const nota = Number(value);
+            const comentarioKey = `comentario-${estudianteId}`;
+            const comentario = formData.get(comentarioKey);
+
+            if (isNaN(nota) || nota < 0 || nota > 100) {
+              hasErrors = true;
+              break;
+            }
+
+            calificaciones.push({ estudianteId, nota, comentario });
           }
-          return {
-            estudianteId: estudiante._id,
-            nota: Number(nota),
-            comentario,
-          };
-        }).filter(Boolean); // Filtra los nulls
+        }
+
 
         if (hasErrors) {
           const errorDiv = document.createElement('div');
@@ -246,7 +250,7 @@
         // Aquí necesitarías también el cursoId, puedes guardarlo en un data-attribute de un elemento superior
         // Por ejemplo, en el li del curso, o en un div que envuelva el formulario
         const cursoId = estudiantes[0].cursoId; // Esto es un ejemplo, ajústalo según tu lógica
-        console.log(calificaciones, cursoId);
+
 
         const res = await fetch(`${API_URL}/calificaciones/${cursoId}`, { // Asegúrate de tener este endpoint en tu backend
           method: 'POST',
