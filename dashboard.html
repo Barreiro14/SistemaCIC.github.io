@@ -1,193 +1,173 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Principal | Gestor Escolar</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp" rel="stylesheet" />
-  <style>
-    #create-user-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      max-width: 400px;
-      margin-top: 10px;
-    }
-
-    #create-user-form input,
-    #create-user-form select,
-    #create-user-form button {
-      padding: 8px;
-      font-size: 1rem;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-
-    th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
-    }
-
-    th {
-      background-color: #f4f4f4;
-    }
-
-    h3 {
-      margin-top: 30px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Principal | Gestor Escolar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Sharp:wght@400;500;600&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-gray-100 p-6">
 
-  <div class="sidebar">
-    <a href="dashboard.html" data-role="all">
-      <span class="material-symbols-sharp">home</span> Inicio
-    </a>
-    <a href="calificaciones.html" data-role="all">
-      <span class="material-symbols-sharp">grading</span> Calificaciones
-    </a>
-    <a href="facturacion.html" data-role="director administrador">
-      <span class="material-symbols-sharp">attach_money</span> Facturación
-    </a>
-    <a href="registro.html" data-role="director administrador">
-      <span class="material-symbols-sharp">folder_open</span> Registro
-    </a>
-    <a data-role="all">
-      <span class="material-symbols-sharp">account_circle</span> Account
-    </a>
-  </div>
+    <div class="sidebar fixed top-0 left-0 h-full bg-white shadow-lg w-64 p-4">
+        <div class="logo text-2xl font-semibold text-gray-800 mb-8">Gestor Escolar</div>
+        <nav class="space-y-2">
+            <a href="dashboard.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md bg-blue-100 text-blue-600 hover:bg-blue-100 transition-colors">
+                <span class="material-symbols-sharp">home</span> Inicio
+            </a>
+            <a href="calificaciones.html" data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">grading</span> Calificaciones
+            </a>
+            <a href="facturacion.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">attach_money</span> Facturación
+            </a>
+            <a href="registro.html" data-role="director administrador" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">folder_open</span> Registro
+            </a>
+            <a data-role="all" class="flex items-center gap-2 p-2 rounded-md hover:bg-gray-100 transition-colors text-gray-700">
+                <span class="material-symbols-sharp">account_circle</span> Account
+            </a>
+        </nav>
+    </div>
 
-  <main>
-    <h2 id="welcome"></h2>
+    <main class="ml-64 p-8">
+        <h2 id="welcome" class="text-3xl font-semibold text-gray-800 mb-6"></h2>
 
-    <section id="dashboard-content">
-      <!-- Sección solo para directores -->
+        <section id="dashboard-content" class="space-y-6">
+            <div id="create-user-section" class="bg-white rounded-md shadow-md p-6">
+                <h3 class="text-xl font-semibold text-gray-700 mb-4">Crear nuevo usuario</h3>
+                <form id="create-user-form" class="space-y-4">
+                    <input type="text" id="user-name" placeholder="Nombre del usuario" required class="w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300" />
+                    <input type="email" id="user-email" placeholder="Correo electrónico" required class="w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300" />
+                    <select id="user-role" required class="w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300">
+                        <option value="" disabled selected>Selecciona un rol</option>
+                        <option value="profesor">Profesor</option>
+                        <option value="administrador">Administrador</option>
+                    </select>
+                    <input type="text" id="user-category" class="profesor-only hidden w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300" placeholder="Categoría (ej. Matemáticas, Francés)" />
+                    <input type="text" id="user-grades" class="profesor-only hidden w-full p-2 rounded-md border border-gray-300 focus:ring focus:ring-blue-200 focus:border-blue-300" placeholder="Grados asignados (ej. 6to, 4to)" />
+                    <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2.5 px-5 rounded-md transition-colors duration-200">Crear</button>
+                </form>
+                <div id="contrasena-generada" class="mt-4 text-gray-700 font-semibold"></div>
+            </div>
 
-      <form id="create-user-form">
-        <input type="text" id="user-name" placeholder="Nombre del usuario" required />
-        <input type="email" id="user-email" placeholder="Correo electrónico" required />
-        <select id="user-role" required>
-          <option value="" disabled selected>Selecciona un rol</option>
-          <option value="profesor">Profesor</option>
-          <option value="administrador">Administrador</option>
-        </select>
-        <input type="text" id="user-category" class="profesor-only hidden" placeholder="Categoría (ej. Matemáticas, Francés)" />
-        <input type="text" id="user-grades" class="profesor-only hidden" placeholder="Grados asignados (ej. 6to, 4to)" />
-        <button type="submit">Crear</button>
-      </form>
-      <div id="contrasena-generada" style="margin-top: 10px; font-weight: bold;"></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-white rounded-md shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Pagos recientes</h3>
+                    <div class="table-container">
+                        <table id="tabla-pagos" class="w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Estudiante</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Monto</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Recibido por</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Fecha</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
 
-      <!-- Tablas de actividades recientes -->
-      <div>
-        <h3>Pagos recientes</h3>
-        <table id="tabla-pagos">
-          <thead>
-            <tr>
-              <th>Estudiante</th>
-              <th>Monto</th>
-              <th>Recibido por</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
+                <div class="bg-white rounded-md shadow-md p-6">
+                    <h3 class="text-xl font-semibold text-gray-700 mb-4">Notas recientes</h3>
+                    <div class="table-container">
+                        <table id="tabla-notas" class="w-full">
+                            <thead class="bg-gray-100">
+                                <tr>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Profesor</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Estudiante</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Nota</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Fecha</th>
+                                    <th class="text-left py-2 px-4 text-gray-600 font-semibold">Modificada</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-      <div>
-        <h3>Notas recientes</h3>
-        <table id="tabla-notas">
-          <thead>
-            <tr>
-              <th>Profesor</th>
-              <th>Estudiante</th>
-              <th>Nota</th>
-              <th>Fecha</th>
-              <th>Modificada</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-    </section>
-  </main>
+    <script>
+        const role = localStorage.getItem('userRole');
+        const user = localStorage.getItem('userName') || 'Usuario';
 
-  <script>
-    const role = localStorage.getItem('userRole');
-    const user = localStorage.getItem('userName') || 'Usuario';
+        if (!role) window.location.href = 'index.html';
 
-    if (!role) window.location.href = 'index.html';
+        document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
 
-    document.getElementById('welcome').innerText = `Bienvenido, ${user}`;
-
-    // Sidebar dinámica por rol
-    document.querySelectorAll('.sidebar a').forEach(link => {
-      const allowedRoles = link.getAttribute('data-role');
-      if (!allowedRoles || allowedRoles === 'all') return;
-      if (!allowedRoles.includes(role)) link.style.display = 'none';
-    });
-
-    // Mostrar la sección de crear usuario solo a directores
-    if (role === 'director') {
-      document.getElementById('create-user-form').classList.remove('hidden');
-    }
-
-    // Mostrar/ocultar campos según rol
-    document.getElementById('user-role').addEventListener('change', function () {
-      const isProfesor = this.value === 'profesor';
-      document.querySelectorAll('.profesor-only').forEach(el => {
-        el.classList.toggle('hidden', !isProfesor);
-        el.required = isProfesor;
-      });
-    });
-
-    // Fetch pagos recientes
-    fetch('https://cicback.onrender.com/api/pagos/ultimos')
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.querySelector('#tabla-pagos tbody');
-        tbody.innerHTML = '';
-        data.forEach(p => {
-          const row = `<tr>
-            <td>${p.estudianteNombre}</td>
-            <td>RD$${p.monto}</td>
-            <td>${p.recibidoPor}</td>
-            <td>${new Date(p.fecha).toLocaleDateString()}</td>
-          </tr>`;
-          tbody.innerHTML += row;
+        // Sidebar dinámica por rol
+        document.querySelectorAll('.sidebar a').forEach(link => {
+            const allowedRoles = link.getAttribute('data-role');
+            if (!allowedRoles || allowedRoles === 'all') return;
+            if (!allowedRoles.includes(role)) link.style.display = 'none';
         });
-      })
-      .catch(err => console.error('Error cargando pagos recientes:', err));
 
-    // Fetch notas recientes
-    fetch('https://cicback.onrender.com/api/notas/ultimas')
-      .then(res => res.json())
-      .then(data => {
-        const tbody = document.querySelector('#tabla-notas tbody');
-        tbody.innerHTML = '';
-        data.forEach(n => {
-          const row = `<tr>
-            <td>${n.profesor}</td>
-            <td>${n.estudiante}</td>
-            <td>${n.valor}</td>
-            <td>${new Date(n.fecha).toLocaleDateString()}</td>
-            <td>${n.modificada ? 'Sí' : 'No'}</td>
-          </tr>`;
-          tbody.innerHTML += row;
+        // Mostrar la sección de crear usuario solo a directores
+        if (role === 'director') {
+            document.getElementById('create-user-section').classList.remove('hidden');
+        }
+
+        // Mostrar/ocultar campos según rol
+        document.getElementById('user-role').addEventListener('change', function () {
+            const isProfesor = this.value === 'profesor';
+            document.querySelectorAll('.profesor-only').forEach(el => {
+                el.classList.toggle('hidden', !isProfesor);
+                el.required = isProfesor;
+            });
         });
-      })
-      .catch(err => console.error('Error cargando notas recientes:', err));
-  </script>
-  
+
+        // Fetch pagos recientes
+        fetch('https://cicback.onrender.com/api/pagos/ultimos')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabla-pagos tbody');
+                tbody.innerHTML = '';
+                data.forEach(p => {
+                    const row = `<tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-2 px-4 text-gray-700">${p.estudianteNombre}</td>
+                        <td class="py-2 px-4 text-gray-700">RD$${p.monto}</td>
+                        <td class="py-2 px-4 text-gray-700">${p.recibidoPor}</td>
+                        <td class="py-2 px-4 text-gray-700">${new Date(p.fecha).toLocaleDateString()}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(err => console.error('Error cargando pagos recientes:', err));
+
+        // Fetch notas recientes
+        fetch('https://cicback.onrender.com/api/notas/ultimas')
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.querySelector('#tabla-notas tbody');
+                tbody.innerHTML = '';
+                data.forEach(n => {
+                    const row = `<tr class="hover:bg-gray-50 transition-colors">
+                        <td class="py-2 px-4 text-gray-700">${n.profesor}</td>
+                        <td class="py-2 px-4 text-gray-700">${n.estudiante}</td>
+                        <td class="py-2 px-4 text-gray-700">${n.valor}</td>
+                        <td class="py-2 px-4 text-gray-700">${new Date(n.fecha).toLocaleDateString()}</td>
+                        <td class="py-2 px-4 text-gray-700">${n.modificada ? 'Sí' : 'No'}</td>
+                    </tr>`;
+                    tbody.innerHTML += row;
+                });
+            })
+            .catch(err => console.error('Error cargando notas recientes:', err));
+    </script>
+
 </body>
 </html>
