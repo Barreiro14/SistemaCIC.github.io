@@ -342,19 +342,20 @@
             }
         }
 
-        async function fetchCursosProfesor() {
-            try {
-                const res = await fetch(`${API_URL}/profesores/${user}/cursos`); // Suponiendo que tienes un endpoint así
+        async function fetchGradosProfesor() {
+              try {
+                // Cambiamos la URL del fetch para usar el nuevo endpoint
+                const res = await fetch(`${API_URL}/profesores/${user}/grados`);
                 if (!res.ok) {
-                    throw new Error(`Error al obtener cursos del profesor: ${res.status}`);
+                  throw new Error(`Error al obtener grados del profesor: ${res.status}`);
                 }
-                const cursos = await res.json();
-                renderCursosProfesor(cursos);
-            } catch (error) {
-                console.error("Error fetching cursos del profesor:", error);
-                appDiv.innerHTML = `<div class="alert alert-error">No se pudieron obtener sus cursos. Por favor, inténtelo de nuevo más tarde.</div>`;
+                const grados = await res.json();
+                renderGradosProfesor(grados); // Asegúrate de tener una función renderGradosProfesor
+              } catch (error) {
+                console.error("Error fetching grados del profesor:", error);
+                appDiv.innerHTML = `<div class="alert alert-error">No se pudieron obtener sus grados. Por favor, inténtelo de nuevo más tarde.</div>`;
+              }
             }
-        }
 
         async function fetchEstudiantes() {
             try {
